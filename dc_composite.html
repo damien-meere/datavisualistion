@@ -47,33 +47,20 @@
         var minDate = date_dim.bottom(1)[0].date;
         var maxDate = date_dim.top(1)[0].date;
 
-
-        var tomSpendByMonth = date_dim.group().reduceSum(function(d){
-            if(d.name === 'Tom'){
-                //+ before return var attempts to convert a number that's been represented in string format into an actual number
-                return +d.spend;
-            }else{
-                return 0;
+        function spend_by_name(name){
+            return function(d){
+                if(d.name === name){
+                    //+ before return var attempts to convert a number that's been represented in string format into an actual number
+                    return +d.spend;
+                }else{
+                    return 0;
+                }
             }
-        });
+        }
 
-        var bobSpendByMonth = date_dim.group().reduceSum(function(d){
-            if(d.name === 'Bob'){
-                //+ before return var attempts to convert a number that's been represented in string format into an actual number
-                return +d.spend;
-            }else{
-                return 0;
-            }
-        });
-
-        var aliceSpendByMonth = date_dim.group().reduceSum(function(d){
-            if(d.name === 'Alice'){
-                //+ before return var attempts to convert a number that's been represented in string format into an actual number
-                return +d.spend;
-            }else{
-                return 0;
-            }
-        });
+        var tomSpendByMonth = date_dim.group().reduceSum(spend_by_name('Tom'));
+        var bobSpendByMonth = date_dim.group().reduceSum(spend_by_name('Bob'));
+        var aliceSpendByMonth = date_dim.group().reduceSum(spend_by_name('Alice'));
 
         var compositeChart = dc.compositeChart('#composite-chart');
 
