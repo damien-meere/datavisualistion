@@ -47,16 +47,20 @@
 
         var spend_dim = ndx.dimension(function(d){
             //return two values = coordinates for date and spend at a particular point
-            return [d.date, d.spend];
+            return [d.date, d.spend, d.name];
         });
 
         //reduceSum totals the amount for a particualr grouping
         var spend_group = spend_dim.group().reduceSum(dc.pluck('spend'));
 
+        //This allows us to color code the data in the scatter chart
+        var personColors = d3.scale.ordinal()
+                    .domain(["Tom", "Bob", "Alice"])
+                    .range(["red", "green", "blue"])
+
         console.log(spend_group.all());
 
         var spend_chart = dc.scatterPlot('#scatter-plot');
-
         spend_chart
             .width(768)
             .height(480)
@@ -65,6 +69,13 @@
             .symbolSize(8)
             .clipPadding(10)
             .yAxisLabel("Amount Spent")
+            .title(function(d){
+                return d.key[2]+" spent "+d.key[1];
+            })
+            .colorAccessor(function(d){
+                return d.key[2];
+            })
+            .colors(personColors)
             .dimension(spend_dim)
             .group(spend_group);
 
