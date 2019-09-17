@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>D3 and Scalable Vector Graphics</title>
+
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/dc/2.1.8/dc.min.css"/>
+    <style>
+        div {
+            clear: left;
+        }
+    </style>
+    <!--The order of these script calls is important due to internal dependancies-->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dc/2.1.8/dc.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/queue-async/1.0.7/queue.min.js"></script>
+
+</head>
+<body>
+    <h1>Data Visualisation</h1>
+    <h2>DC Custom Reduce</h2>
+    <div>
+        <h3>Spend Per Person</h3>
+        <div id="bar-chart"></div>
+    </div>
+
+    <script>
+    //Data visualisation is deferred until the data has been gathered from the requisite location
+    queue()
+        .defer(d3.json, "data/transactions.json")
+        .await(makeGraphs);
+
+    function makeGraphs(error, transactionsData) {
+        var ndx = crossfilter(transactionsData);
+        var name_dim = ndx.dimension(dc.pluck('name'));
+
+        var total_spend_by_person = name_dim.group().reduceSum(dc.pluck('spend'));
+        //reduceSum - totals a number of values for us for a grouping.
+        var total_chart = dc.barChart("#bar-chart");
+        total_chart
+            .width(500)
+            .height(300)
+            .dimension(name_dim)
+            .group(total_spend_by_person)
+            .x(d3.scale.ordinal())
+            .xUnits(dc.units.ordinal);
+
+
+
+
+        //Can use more generic reduce() function to create custom arithmetic operations on your data
+
+
+
+
+
+
+        dc.renderAll();
+    }
+    </script>
+</body>
+</html>
